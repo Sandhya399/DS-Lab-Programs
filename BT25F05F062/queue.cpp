@@ -1,125 +1,138 @@
-#include <iostream>
-using namespace std;
+#include <stdio.h>
 
-class CircularQueue {
-private:
-    int* arr;
-    int front;
-    int rear;
-    int capacity;
+#define MAX 5
 
-public:
-    // Constructor to initialize the queue with a specific size
-    CircularQueue(int size) {
-        capacity = size;
-        arr = new int[capacity];
+int queue[MAX];
+int front = -1;
+int rear = -1;
+
+// Insert an element into the circular queue
+void enqueue()
+{
+    int value;
+
+    // Check for Queue Overflow
+    if ((rear + 1) % MAX == front)
+    {
+        printf("Queue Overflow! Circular Queue is full.\n");
+        return;
+    }
+
+    printf("Enter the element to insert: ");
+    scanf("%d", &value);
+
+    // If queue is empty
+    if (front == -1)
+    {
+        front = 0;
+        rear = 0;
+    }
+    else
+    {
+        rear = (rear + 1) % MAX;
+    }
+
+    queue[rear] = value;
+
+    printf("%d inserted into the queue.\n", value);
+}
+
+// Delete an element from the circular queue
+void dequeue()
+{
+    int value;
+
+    // Check for Queue Underflow
+    if (front == -1)
+    {
+        printf("Queue Underflow! Circular Queue is empty.\n");
+        return;
+    }
+
+    value = queue[front];
+
+    // If only one element is present
+    if (front == rear)
+    {
         front = -1;
         rear = -1;
     }
-
-    // Destructor to free allocated memory
-    ~CircularQueue() {
-        delete[] arr;
+    else
+    {
+        front = (front + 1) % MAX;
     }
 
-    // Check if the queue is full
-    bool isFull() {
-        // Condition 1: Rear wraps around right behind front
-        // Condition 2: Front is at 0 and Rear is at the last index
-        return ((rear + 1) % capacity == front);
+    printf("%d deleted from the queue.\n", value);
+}
+
+// Display all elements of the circular queue
+void display()
+{
+    int i;
+
+    // Check if queue is empty
+    if (front == -1)
+    {
+        printf("Queue is empty.\n");
+        return;
     }
 
-    // Check if the queue is empty
-    bool isEmpty() {
-        return (front == -1);
+    printf("Circular Queue: ");
+
+    i = front;
+
+    while (1)
+    {
+        printf("%d ", queue[i]);
+
+        if (i == rear)
+        {
+            break;
+        }
+
+        i = (i + 1) % MAX;
     }
 
-    // Insert an element into the queue (Enqueue)
-    void enqueue(int value) {
-        if (isFull()) {
-            cout << "Queue Overflow: Cannot insert " << value << ". Queue is full.\n";
-            return;
-        }
+    printf("\n");
+}
 
-        // If inserting the very first element
-        if (isEmpty()) {
-            front = 0;
-            rear = 0;
-        } else {
-            // Circularly increment rear index
-            rear = (rear + 1) % capacity;
-        }
+int main()
+{
+    int choice;
 
-        arr[rear] = value;
-        cout << "Inserted: " << value << "\n";
+    while (1)
+    {
+        printf("\n----- CIRCULAR QUEUE -----\n");
+        printf("1. Insert (Enqueue)\n");
+        printf("2. Delete (Dequeue)\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                enqueue();
+                break;
+
+            case 2:
+                dequeue();
+                break;
+
+            case 3:
+                display();
+                break;
+
+            case 4:
+                printf("Program terminated.\n");
+                return 0;
+
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
     }
-
-    // Remove an element from the queue (Dequeue)
-    int dequeue() {
-        if (isEmpty()) {
-            cout << "Queue Underflow: Cannot delete. Queue is empty.\n";
-            return -1;
-        }
-
-        int deletedValue = arr[front];
-
-        // If the queue has only one element left, reset pointers
-        if (front == rear) {
-            front = -1;
-            rear = -1;
-        } else {
-            // Circularly increment front index
-            front = (front + 1) % capacity;
-        }
-
-        return deletedValue;
-    }
-
-    // Display all elements of the circular queue
-    void display() {
-        if (isEmpty()) {
-            cout << "Queue is empty.\n";
-            return;
-        }
-
-        cout << "Queue elements: ";
-        int i = front;
-        while (true) {
-            cout << arr[i] << " ";
-            if (i == rear) break;
-            i = (i + 1) % capacity; // Circular traversal
-        }
-        cout << "\n";
-    }
-};
-
-int main() {
-    // Create a circular queue capable of holding 5 elements
-    CircularQueue q(5);
-
-    // Enqueue 5 elements
-    q.enqueue(10);
-    q.enqueue(20);
-    q.enqueue(30);
-    q.enqueue(40);
-    q.enqueue(50);
-    
-    q.display();
-
-    // Trying to insert into a full queue (Should trigger overflow)
-    q.enqueue(60);
-
-    // Dequeue 2 elements
-    cout << "Dequeued: " << q.dequeue() << "\n";
-    cout << "Dequeued: " << q.dequeue() << "\n";
-
-    q.display();
-
-    // Enqueue new elements to demonstrate circular reuse of empty space
-    q.enqueue(60);
-    q.enqueue(70);
-
-    q.display();
 
     return 0;
 }
